@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const bundlePath = path.resolve(__dirname, "dist/");
 
 module.exports = {
-    entry: "./src/index.js",
+    entry: ['babel-regenerator-runtime', "./src/index.js"],
     module: {
         rules: [
             {
