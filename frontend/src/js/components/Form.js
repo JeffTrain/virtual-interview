@@ -18,12 +18,15 @@ class ConnectedForm extends Component {
         super();
 
         this.state = {
-            title: ""
+            title: "",
+            stream: null,
+            loading: false
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.openWebCam = this.openWebCam.bind(this);
+        this.closeWebCam = this.closeWebCam.bind(this);
     }
 
     handleChange(event) {
@@ -40,6 +43,10 @@ class ConnectedForm extends Component {
         this.setState({title: ""});
     }
 
+    componentDidMount() {
+        this.video = document.querySelector('video');
+    }
+
     render() {
         const {title} = this.state;
         return (
@@ -49,7 +56,17 @@ class ConnectedForm extends Component {
                     <input type="text" className="form-control" id="title" value={title} onChange={this.handleChange}/>
                 </div>
                 <p>
-                    <button type="button" className="btn btn-success btn-lg" onClick={this.openWebCam}>打开摄像头</button>
+                    {
+                        !this.state.stream &&
+                        <button type="button" className="btn btn-success btn-lg" onClick={this.openWebCam}
+                                disabled={this.state.loading}>
+                            打开摄像头</button>
+                    }
+                    {
+                        this.state.stream &&
+                        <button type="button" className="btn btn-success btn-lg" onClick={this.closeWebCam}>
+                            关闭摄像头</button>
+                    }
                     <video autoPlay></video>
                 </p>
                 <p>
@@ -65,15 +82,35 @@ class ConnectedForm extends Component {
             return;
         }
 
-        const video = document.querySelector('video');
-
         try {
+            this.setState({loading: true});
             let stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true
             });
 
-            video.srcObject = stream;
+            this.setState({
+                stream: stream
+            }, () => {
+                this.video.srcObject = stream;
+                this.setState({loading: false});
+            });
+        } catch (ex) {
+            console.error(ex);
+        }
+    }
+
+    async closeWebCam() {
+        try {
+            let audioTracks = this.video.srcObject.getAudioTracks();
+            audioTracks.forEach(track => track.stop());
+
+            let videoTracks = this.video.srcObject.getVideoTracks();
+            videoTracks.forEach(t => t.stop());
+
+            this.setState({
+                stream: null
+            });
         } catch (ex) {
             console.error(ex);
         }
