@@ -45,6 +45,7 @@ class ConnectedForm extends Component {
 
     componentDidMount() {
         this.video = document.querySelector('video');
+        this.downloadLink = document.querySelector('#download-link');
     }
 
     render() {
@@ -70,6 +71,14 @@ class ConnectedForm extends Component {
                     <video autoPlay></video>
                 </p>
                 <p>
+                    {
+                        this.state.recording === false &&
+                        <a href={this.state.downloadLink} download={this.state.downloadName}
+                           name={this.state.downloadName}
+                           id="download-link" target="_blank">下载视频</a>
+                    }
+                </p>
+                <p>
                     <button type="submit" className="btn btn-success btn-lg">保存</button>
                 </p>
             </form>
@@ -88,6 +97,8 @@ class ConnectedForm extends Component {
                 video: true,
                 audio: true
             });
+
+            this.startRecording(stream);
 
             this.setState({
                 stream: stream
@@ -108,12 +119,71 @@ class ConnectedForm extends Component {
             let videoTracks = this.video.srcObject.getVideoTracks();
             videoTracks.forEach(t => t.stop());
 
+            this.stopRecording();
+
             this.setState({
                 stream: null
             });
         } catch (ex) {
             console.error(ex);
         }
+    }
+
+    startRecording(stream) {
+        let options = undefined;
+        if (typeof MediaRecorder.isTypeSupported === 'function') {
+            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+                options = {mimeType: 'video/webm;codecs=vp9'};
+            } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
+                options = {mimeType: 'video/webm;codecs=h264'};
+            } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+                options = {mimeType: 'video/webm;codecs=vp8'};
+            }
+        }
+
+        this.mediaRecorder = new MediaRecorder(stream, options);
+
+        this.mediaRecorder.start(10);
+
+        let url = window.URL || window.webkitURL;
+
+        this.chunks = []
+
+        this.mediaRecorder.ondataavailable = e => {
+            this.chunks.push(e.data);
+        };
+        this.mediaRecorder.onerror = (e) => {
+            console.error(e);
+        };
+        this.mediaRecorder.onstart = () => {
+            this.setState({recording: true});
+        };
+        this.mediaRecorder.onstop = () => {
+            let blob = new Blob(this.chunks, {type: "video/webm"});
+            this.chunks = [];
+
+            let videoURL = window.URL.createObjectURL(blob);
+            let rand = Math.floor(Math.random() * 1000000000);
+            let name = `video_${rand}.webm`;
+            this.setState({
+                downloadLink: videoURL,
+                downloadName: name,
+                recording: false
+            });
+        };
+        this.mediaRecorder.onpause = () => {
+
+        };
+        this.mediaRecorder.onresume = () => {
+
+        };
+        this.mediaRecorder.onwarning = () => {
+
+        };
+    }
+
+    stopRecording() {
+        this.mediaRecorder.stop();
     }
 }
 
