@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "babel-runtime": "^6.26.0",
+    "qiniu-js": "^2.2.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "redux-devtools": "^3.4.1",

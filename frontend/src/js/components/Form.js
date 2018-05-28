@@ -35,8 +35,11 @@ class ConnectedForm extends Component {
         });
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
+
+        await this.uploadVideoToServer();
+
         const {title} = this.state;
         const id = uuidv1();
         this.props.addVideo({title, id});
@@ -184,6 +187,10 @@ class ConnectedForm extends Component {
 
     stopRecording() {
         this.mediaRecorder.stop();
+    }
+
+    uploadVideoToServer() {
+        
     }
 }
 
