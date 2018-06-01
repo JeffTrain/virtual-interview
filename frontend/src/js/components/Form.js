@@ -20,7 +20,8 @@ class ConnectedForm extends Component {
         this.state = {
             title: "",
             stream: null,
-            loading: false
+            loading: false,
+            url: "",
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -40,9 +41,9 @@ class ConnectedForm extends Component {
 
         await this.uploadVideoToServer();
 
-        const {title} = this.state;
+        const {title, url} = this.state;
         const id = uuidv1();
-        this.props.addVideo({title, id});
+        this.props.addVideo({title, url, id});
         this.setState({title: ""});
     }
 
@@ -163,11 +164,14 @@ class ConnectedForm extends Component {
         };
         this.mediaRecorder.onstop = () => {
             let blob = new Blob(this.chunks, {type: "video/webm"});
+            this.blob = blob
+
             this.chunks = [];
 
             let videoURL = window.URL.createObjectURL(blob);
             let rand = Math.floor(Math.random() * 1000000000);
             let name = `video_${rand}.webm`;
+            this.name = name;
             this.setState({
                 downloadLink: videoURL,
                 downloadName: name,
@@ -189,8 +193,17 @@ class ConnectedForm extends Component {
         this.mediaRecorder.stop();
     }
 
-    uploadVideoToServer() {
-        
+    async uploadVideoToServer() {
+        let url = `http://localhost:5000/upload`
+        let payload = new FormData()
+        payload.append('file', this.blob, this.name)
+        let data = {
+            method: 'POST',
+            body: payload
+        }
+        let result = await fetch(url, data);
+        console.log('result = ', result.url);
+        this.setState({url: result.url});
     }
 }
 

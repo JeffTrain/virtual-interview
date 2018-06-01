@@ -11,7 +11,7 @@ const ConnectedList = ({videos}) => (
     <ul className="list-group list-group-flush">
         {videos.map(el => (
             <li className="list-group-item" key={el.id}>
-                {el.title}
+                {el.title}: <a href={el.url} target="_blank">{el.url}</a>
             </li>
         ))
         }
