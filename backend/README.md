@@ -6,6 +6,9 @@ Ubuntu or Mac:
 FLASK_APP=hello.py flask run
 
 Windows:
+start.bat
+
+or 
 set FLASK_APP=hello.py&&flask run
 
 or 

@@ -1,4 +1,5 @@
 import os
+from subprocess import call
 
 from flask import Flask, request, redirect, url_for
 from flask import send_from_directory
@@ -13,9 +14,17 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_screenshots(filename):
+    file, ext = os.path.splitext(filename)
+    screenshot_filename = file + ".jpg"
+
+    call(["ffmpeg", "-ss", "0", "-i", filename, "-vframes", "1", "-q:v", "2", screenshot_filename])
 
 
 @app.route("/")
@@ -35,10 +44,12 @@ def upload_file():
             return redirect(request.url + '?error=NoSelectedFile')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            webm_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(webm_path)
+
+            get_screenshots(webm_path)
 
             location = url_for('uploaded_file', filename=filename)
-            print('location = ', location)
             return redirect(location)
         else:
             url = request.url + '?error=FileTypeError'

@@ -136,7 +136,7 @@ class ConnectedForm extends Component {
     startRecording(stream) {
         let options = undefined;
         if (typeof MediaRecorder.isTypeSupported === 'function') {
-            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9') && false) {
                 options = {mimeType: 'video/webm;codecs=vp9'};
             } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
                 options = {mimeType: 'video/webm;codecs=h264'};
@@ -144,6 +144,8 @@ class ConnectedForm extends Component {
                 options = {mimeType: 'video/webm;codecs=vp8'};
             }
         }
+
+        console.log('options = ', options);
 
         this.mediaRecorder = new MediaRecorder(stream, options);
 
@@ -163,7 +165,7 @@ class ConnectedForm extends Component {
             this.setState({recording: true});
         };
         this.mediaRecorder.onstop = () => {
-            let blob = new Blob(this.chunks, {type: "video/webm"});
+            let blob = new Blob(this.chunks, {type: "video/mp4"});
             this.blob = blob
 
             this.chunks = [];
