@@ -22,9 +22,20 @@ def allowed_file(filename):
 
 def get_screenshots(filename):
     file, ext = os.path.splitext(filename)
-    screenshot_filename = file + ".jpg"
+    shot(file, filename, "0")
+    shot(file, filename, "1")
+    shot(file, filename, "2")
+    shot(file, filename, "3")
+    shot(file, filename, "4")
 
-    call(["ffmpeg", "-ss", "0", "-i", filename, "-vframes", "1", "-q:v", "2", screenshot_filename])
+
+def shot(file, filename, index):
+    screenshot_filename = get_screenshot_filename(file, index)
+    call(["ffmpeg", "-ss", index, "-i", filename, "-vframes", "1", "-q:v", "2", screenshot_filename])
+
+
+def get_screenshot_filename(file, index):
+    return file + "-" + index + ".jpg"
 
 
 @app.route("/")
