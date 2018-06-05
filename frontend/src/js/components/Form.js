@@ -81,6 +81,12 @@ class ConnectedForm extends Component {
                            name={this.state.downloadName}
                            id="download-link" target="_blank">下载视频</a>
                     }
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {
+                        this.state.recording === false &&
+                        <a href={this.state.audioDownloadLink} download={this.state.audioDownloadName}
+                           name={this.state.audioDownloadName} id="audio-download-link" target="_blank">下载音频</a>
+                    }
                 </p>
                 <p>
                     <button type="submit" className="btn btn-success btn-lg">保存</button>
@@ -145,25 +151,41 @@ class ConnectedForm extends Component {
             }
         }
 
-        console.log('options = ', options);
-
         this.mediaRecorder = new MediaRecorder(stream, options);
+        this.audioRecorder = new MediaRecorder(stream, {
+            type: 'audio/wav',
+            gUM: {audio: true},
+            tag: 'audio',
+            ext: '.wav',
+            mimeType: ''
+        });
 
         this.mediaRecorder.start(10);
+        this.audioRecorder.start(10);
 
         let url = window.URL || window.webkitURL;
 
-        this.chunks = []
+        this.chunks = [];
+        this.audioChunks = [];
 
         this.mediaRecorder.ondataavailable = e => {
             this.chunks.push(e.data);
         };
+        this.audioRecorder.ondataavailable = e => {
+            this.audioChunks.push(e.data);
+        };
         this.mediaRecorder.onerror = (e) => {
+            console.error(e);
+        };
+        this.audioRecorder.onerror = (e) => {
             console.error(e);
         };
         this.mediaRecorder.onstart = () => {
             this.setState({recording: true});
         };
+        this.audioRecorder.onstart = () => {
+            this.setState({recording: true});
+        }
         this.mediaRecorder.onstop = () => {
             let blob = new Blob(this.chunks, {type: "video/mp4"});
             this.blob = blob
@@ -180,25 +202,53 @@ class ConnectedForm extends Component {
                 recording: false
             });
         };
+        this.audioRecorder.onstop = () => {
+            let blob = new Blob(this.audioChunks, {type: 'audio/wav'});
+            this.audioBlob = blob;
+
+            this.audioChunks = [];
+
+            let audioURL = window.URL.createObjectURL(blob);
+            let rand = Math.floor(Math.random() * 100000000000);
+            let name = `audio_${rand}.wav`;
+            this.audioName = name;
+
+            this.setState({
+                audioDownloadLink: audioURL,
+                audioDownloadName: name,
+                recording: false
+            })
+        }
         this.mediaRecorder.onpause = () => {
+
+        };
+        this.audioRecorder.onpause = () => {
 
         };
         this.mediaRecorder.onresume = () => {
 
         };
+        this.audioRecorder.onresume = () => {
+
+        }
         this.mediaRecorder.onwarning = () => {
 
         };
+        this.audioRecorder.onwarning = () => {
+
+        }
     }
 
     stopRecording() {
         this.mediaRecorder.stop();
+        this.audioRecorder.stop();
     }
 
     async uploadVideoToServer() {
         let url = `http://localhost:5000/upload`
         let payload = new FormData()
         payload.append('file', this.blob, this.name)
+        payload.append('audio', this.audioBlob, this.audioName)
         let data = {
             method: 'POST',
             body: payload

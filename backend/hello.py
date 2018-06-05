@@ -1,11 +1,13 @@
 import os
 from subprocess import call
+from time import sleep
 
 from flask import Flask, request, redirect, url_for
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 
+from audio import listen_and_translate
 from face import faces
 
 UPLOAD_FOLDER = 'uploads'
@@ -63,6 +65,10 @@ def hello():
     return "Hello World!"
 
 
+def audio_to_text(webm_path):
+    listen_and_translate(webm_path)
+
+
 @app.route("/upload", methods=['get', 'post'])
 @cross_origin()
 def upload_file():
@@ -78,8 +84,17 @@ def upload_file():
             file.save(webm_path)
 
             get_screenshots(webm_path)
+            # audio_to_text(webm_path)
 
             location = url_for('uploaded_file', filename=filename)
+
+            if 'audio' in request.files:
+                audio = request.files['audio']
+                filename = secure_filename(audio.filename)
+                audio_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                audio.save(audio_path)
+                audio_to_text(audio_path)
+
             return redirect(location)
         else:
             url = request.url + '?error=FileTypeError'
