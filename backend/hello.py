@@ -24,7 +24,7 @@ def allowed_file(filename):
 
 def write_score(score_file, score):
     with open(score_file, 'w') as f:
-        f.writelines(score)
+        f.writelines(str(score))
 
 
 def get_screenshots(video_full_path):
