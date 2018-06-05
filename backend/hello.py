@@ -22,24 +22,35 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def get_screenshots(fullpath):
-    file, ext = os.path.splitext(fullpath)
-    shot(file, fullpath, "0")
-    shot(file, fullpath, "1")
-    shot(file, fullpath, "2")
-    shot(file, fullpath, "3")
-    shot(file, fullpath, "4")
+def write_score(score_file, score):
+    with open(score_file, 'w') as f:
+        f.writelines(score)
 
 
-def check_face(screenshot_filename):
-    fs = faces(screenshot_filename)
-    print('faces = ', fs)
+def get_screenshots(video_full_path):
+    file, ext = os.path.splitext(video_full_path)
+    score_file = file + '-score.txt'
+
+    score = 0
+    score += shot(file, video_full_path, "0")
+    score += shot(file, video_full_path, "1")
+    score += shot(file, video_full_path, "2")
+    score += shot(file, video_full_path, "3")
+    score += shot(file, video_full_path, "4")
+
+    write_score(score_file, score)
 
 
 def shot(file, filename, index):
     screenshot_filename = get_screenshot_filename(file, index)
     call(["ffmpeg", "-ss", index, "-i", filename, "-vframes", "1", "-q:v", "2", screenshot_filename])
-    check_face(screenshot_filename)
+    face_numbers = faces(screenshot_filename)
+
+    score = 0
+    if face_numbers == 1:
+        score = 1
+
+    return score
 
 
 def get_screenshot_filename(file, index):

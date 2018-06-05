@@ -10,6 +10,8 @@ predictor = dlib.shape_predictor(landmark_file_path)
 
 
 def faces(filename):
+    filename = os.path.realpath(os.path.join(dir_path, filename))
+    print('file name = ', filename)
     frame = cv2.imread(filename)
     scale = 200 / min(frame.shape[1], frame.shape[0])
     thumb = cv2.resize(frame, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
