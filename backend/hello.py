@@ -6,6 +6,8 @@ from flask import send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 
+from face import faces
+
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['webm', 'mp4', 'png'])
 app = Flask(__name__)
@@ -20,18 +22,24 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def get_screenshots(filename):
-    file, ext = os.path.splitext(filename)
-    shot(file, filename, "0")
-    shot(file, filename, "1")
-    shot(file, filename, "2")
-    shot(file, filename, "3")
-    shot(file, filename, "4")
+def get_screenshots(fullpath):
+    file, ext = os.path.splitext(fullpath)
+    shot(file, fullpath, "0")
+    shot(file, fullpath, "1")
+    shot(file, fullpath, "2")
+    shot(file, fullpath, "3")
+    shot(file, fullpath, "4")
+
+
+def check_face(screenshot_filename):
+    fs = faces(screenshot_filename)
+    print('faces = ', fs)
 
 
 def shot(file, filename, index):
     screenshot_filename = get_screenshot_filename(file, index)
     call(["ffmpeg", "-ss", index, "-i", filename, "-vframes", "1", "-q:v", "2", screenshot_filename])
+    check_face(screenshot_filename)
 
 
 def get_screenshot_filename(file, index):
