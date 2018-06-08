@@ -1,13 +1,13 @@
 import React from 'react';
 import * as ReactDOM from "react-dom";
-import App from './js/App.js';
-import {addVideo} from "./js/actions/index";
+import App from './js/components/App.js';
 import store from './js/store/index'
+import {Provider} from "react-redux";
 
-window.store = store;
-window.addVideo = addVideo;
 
 ReactDOM.render(
-    <App/>,
+    <Provider store={store}>
+        <App/>
+    </Provider>,
     document.getElementById("root")
 )

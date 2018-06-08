@@ -15,7 +15,6 @@
     "qiniu-js": "^2.2.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-redux": "^5.0.7",
     "redux-devtools": "^3.4.1",
     "uuid": "^3.2.1"
   },
@@ -23,6 +22,7 @@
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "css-loader": "^0.28.11",
+    "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "style-loader": "^0.21.0",
     "webpack": "^4.11.1",
