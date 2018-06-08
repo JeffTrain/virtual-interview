@@ -15,8 +15,7 @@
     "qiniu-js": "^2.2.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "redux-devtools": "^3.4.1",
-    "uuid": "^3.2.1"
+    "redux-devtools": "^3.4.1"
   },
   "devDependencies": {
     "babel-loader": "^7.1.4",
@@ -25,6 +24,7 @@
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "style-loader": "^0.21.0",
+    "uuid": "^3.2.1",
     "webpack": "^4.11.1",
     "webpack-cli": "^2.1.5",
     "webpack-dev-server": "^3.1.4"

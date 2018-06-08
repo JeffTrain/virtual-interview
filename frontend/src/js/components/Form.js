@@ -1,6 +1,7 @@
 import {addVideo} from "../actions/index";
 import * as React from "react";
 import {connect} from "react-redux";
+import uuidv1 from 'uuid';
 
 const mapDispatchToProps = dispatch => ({
     addVideo: video => dispatch(addVideo(video))
@@ -27,7 +28,7 @@ class ConnectedForm extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         const {title} = this.state;
-        const id = '1234';
+        const id = uuidv1();
         this.props.addVideo({title, id});
         this.setState({title: ""})
     }
