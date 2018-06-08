@@ -2,12 +2,7 @@ import * as React from "react";
 import List from './List';
 import Form from "./Form";
 import 'bootstrap/dist/css/bootstrap.min.css'
-import store from '../store/index'
-import {addVideo} from '../actions/index'
-
-window.store = store;
-window.addVideo = addVideo;
-
+// import 'semantic-ui-css/semantic.min.css';
 
 export const App = () =>
     <div className="row mt-5">
