@@ -1,5 +1,6 @@
 ﻿import os
 from flask import Flask, request, redirect, url_for, send_from_directory
+from subprocess import call
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 
@@ -11,6 +12,28 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def get_screenshot_filename(file, index):
+    return file + "-" + index + ".jpg"
+
+
+def shot(file, video_full_path, index):
+    screenshot_filename = get_screenshot_filename(file, index)
+    call(["ffmpeg", "-ss", index, "-i", video_full_path, "-vframes", "1", "-q:v", "2", screenshot_filename])
+
+    return 0
+
+
+def take_screen_shots(video_full_path):
+    file, ext = os.path.splitext(video_full_path)
+
+    score = 0
+    score += shot(file, video_full_path, "0")
+    score += shot(file, video_full_path, "1")
+    score += shot(file, video_full_path, "2")
+    score += shot(file, video_full_path, "3")
+    score += shot(file, video_full_path, "4")
 
 
 @app.route('/')
@@ -36,7 +59,10 @@ def uploads():
 
         if video_file and allowed_files(video_file.filename):
             filename = secure_filename(video_file.filename)
-            video_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            video_full_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            video_file.save(video_full_path)
+
+            take_screen_shots(video_full_path)
 
             location = url_for('uploaded_file', filename=filename)
 
