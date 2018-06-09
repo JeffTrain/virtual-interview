@@ -1,8 +1,12 @@
 ﻿import os
+from time import sleep
+
 from flask import Flask, request, redirect, url_for, send_from_directory
 from subprocess import call
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
+
+from face import faces
 
 app = Flask(__name__)
 
@@ -21,12 +25,18 @@ def get_screenshot_filename(file, index):
 def shot(file, video_full_path, index):
     screenshot_filename = get_screenshot_filename(file, index)
     call(["ffmpeg", "-ss", index, "-i", video_full_path, "-vframes", "1", "-q:v", "2", screenshot_filename])
+    sleep(1)
+    face_numbers = faces(screenshot_filename)
+
+    if face_numbers == 1:
+        return 1
 
     return 0
 
 
 def take_screen_shots(video_full_path):
     file, ext = os.path.splitext(video_full_path)
+    score_file = file + '-score.txt'
 
     score = 0
     score += shot(file, video_full_path, "0")
@@ -34,6 +44,9 @@ def take_screen_shots(video_full_path):
     score += shot(file, video_full_path, "2")
     score += shot(file, video_full_path, "3")
     score += shot(file, video_full_path, "4")
+
+    with open(score_file, 'w') as file:
+        file.writelines(str(score))
 
 
 @app.route('/')
