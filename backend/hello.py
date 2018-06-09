@@ -1,16 +1,20 @@
 ﻿import os
 from flask import Flask, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
 ALLOWED_EXTENSIONS = set(['webm', 'mp4', 'png'])
 UPLOAD_FOLDER = 'uploads'
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.route('/')
+@cross_origin()
 def hello():
     return "Hello World"
 
@@ -20,6 +24,7 @@ def allowed_files(filename):
 
 
 @app.route('/uploads', methods=['POST', 'GET'])
+@cross_origin()
 def uploads():
     if request.method == 'POST':
         if 'video' not in request.files:
@@ -45,5 +50,6 @@ def uploads():
 
 
 @app.route('/uploaded_file/<filename>', methods=['GET'])
+@cross_origin()
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

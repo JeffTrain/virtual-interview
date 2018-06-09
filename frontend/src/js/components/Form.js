@@ -13,11 +13,13 @@ class ConnectedForm extends React.Component {
         super();
 
         this.state = {
-            title: ""
+            title: "",
+            url: "",
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.videoStopped = this.videoStopped.bind(this);
     }
 
     handleChange(event) {
@@ -26,12 +28,28 @@ class ConnectedForm extends React.Component {
         });
     }
 
-    handleSubmit(event) {
+    videoStopped(blob, name) {
+        this.setState({
+            blob,
+            name
+        });
+    }
+
+    async handleSubmit(event) {
         event.preventDefault();
         const {title} = this.state;
         const id = uuidv1();
-        this.props.addVideo({title, id});
-        this.setState({title: ""})
+
+        let payload = new FormData();
+        payload.append('video', this.state.blob, this.state.name)
+        let result = await fetch('http://localhost:5000/uploads', {
+            method: 'POST',
+            body: payload
+        })
+
+        this.props.addVideo({title, id, url: result.url});
+
+        this.setState({title: "", url: ""})
     }
 
     render() {
@@ -44,7 +62,7 @@ class ConnectedForm extends React.Component {
                     <input type="text" className="form-control" id="title" value={title} onChange={this.handleChange}/>
                 </div>
                 <div>
-                    <VideoCapture/>
+                    <VideoCapture onStopRecording={this.videoStopped}/>
                 </div>
                 <div>
                     <button type="submit" className="btn btn-success btn-lg">保存</button>

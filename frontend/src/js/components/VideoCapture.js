@@ -38,6 +38,7 @@ export default class VideoCapture extends React.Component {
     closeCam() {
         document.getElementById('video').srcObject = null;
         this.media.stop();
+
         this.setState({
             recording: false,
             stream: null
@@ -92,6 +93,8 @@ export default class VideoCapture extends React.Component {
                 downloadName: filename,
                 recording: false
             });
+
+            this.props.onStopRecording(blob, filename);
         }
     }
 }

@@ -8,7 +8,7 @@ const ConnectedList = ({videos}) => (
         {
             videos.map(video => (
                     <li className="list-group-item" key={video.id}>
-                        {video.title}
+                        <a href={video.url} target="_blank">{video.title}</a>
                     </li>
                 )
             )
