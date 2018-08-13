@@ -1,4 +1,3 @@
 Flask
 flask-cors
-cv2
 dlib

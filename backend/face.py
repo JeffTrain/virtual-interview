@@ -6,6 +6,7 @@ face_detector = dlib.get_frontal_face_detector()
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 landmark_file_path = os.path.realpath(os.path.join(dir_path, './shape_predictor_68_face_landmarks.dat'))
+print(landmark_file_path)
 predictor = dlib.shape_predictor(landmark_file_path)
 
 

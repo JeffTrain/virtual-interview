@@ -1,3 +1,4 @@
-uploads
-uploads/*.*
+uploads/*.webm
+uploads/*.jpg
+uploads/*.txt
 .idea
