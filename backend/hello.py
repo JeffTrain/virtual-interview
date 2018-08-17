@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 from face import faces
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['webm', 'mp4', 'png'])
+ALLOWED_EXTENSIONS = set(['webm', 'mp4'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
